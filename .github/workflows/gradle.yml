@@ -1,0 +1,31 @@
+name: Build JADX
+
+on:
+  push:
+    branches:
+      - main  # Sesuaikan dengan nama branch Anda, atau atur ke branch yang sesuai
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up JDK 11
+        uses: actions/setup-java@v2
+        with:
+          java-version: '11'
+
+      - name: Build JADX
+        run: |
+          ./gradlew dist
+          mkdir JADX-dist
+          mv build/jadx/* JADX-dist/
+          zip -r JADX-${{ github.sha }}.zip JADX-dist/*
+
+      - name: Upload JADX build artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: JADX-${{ github.sha }}.zip
+          path: JADX-${{ github.sha }}.zip
